@@ -141,6 +141,7 @@ func stopAgents(dryRun bool) error {
 			}
 		}
 	}
+	failed := 0
 	for _, p := range order {
 		if p.PID == os.Getpid() {
 			continue
@@ -151,9 +152,13 @@ func stopAgents(dryRun bool) error {
 		}
 		if err := terminate(p.PID); err != nil {
 			fmt.Fprintf(os.Stderr, "Could not stop %s (PID %d): %v\n", p.Name, p.PID, err)
+			failed++
 		} else {
 			fmt.Printf("Stopped %s (PID %d)\n", p.Name, p.PID)
 		}
+	}
+	if failed > 0 {
+		return fmt.Errorf("could not stop %d process(es)", failed)
 	}
 	return nil
 }

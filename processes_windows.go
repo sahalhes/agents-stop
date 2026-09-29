@@ -31,7 +31,7 @@ func listProcesses() ([]process, error) {
 }
 
 func terminate(pid int) error {
-	output, err := exec.Command("taskkill.exe", "/PID", fmt.Sprint(pid), "/F").CombinedOutput()
+	output, err := exec.Command("taskkill.exe", "/PID", fmt.Sprint(pid), "/T", "/F").CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("taskkill: %s", strings.TrimSpace(string(output)))
 	}
