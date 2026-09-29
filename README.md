@@ -30,4 +30,5 @@ Supported process names: Codex, Claude Code, OpenCode, Goose, Herd, Aider, Gemin
 - Windows enumeration uses built-in PowerShell CIM and termination uses `taskkill /T /F` to include descendants.
 - macOS/Linux enumeration uses `ps` and preserves the full command text for marker matching; termination sends `SIGKILL`.
 - `--dry-run` is recommended before the first stop on a machine.
+- If any matched process cannot be stopped, the command reports each failure and exits with a nonzero status.
 - Agent matching is maintained in `main.go`; direct executable names match explicitly, while Node/Python processes require one of the listed agent command markers. Keep matching narrow and update this document when supported matchers change.
