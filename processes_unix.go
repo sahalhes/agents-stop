@@ -15,8 +15,12 @@ func listProcesses() ([]process, error) {
 	if err != nil {
 		return nil, err
 	}
+	return parsePSOutput(string(output)), nil
+}
+
+func parsePSOutput(output string) []process {
 	var result []process
-	for _, line := range strings.Split(string(output), "\n") {
+	for _, line := range strings.Split(output, "\n") {
 		line = strings.TrimSpace(line)
 		fields := strings.Fields(line)
 		if len(fields) < 3 {
@@ -27,14 +31,20 @@ func listProcesses() ([]process, error) {
 		if e1 != nil || e2 != nil {
 			continue
 		}
-		argsStart := len(fields[0]) + len(fields[1])
-		for argsStart < len(line) && line[argsStart] == ' ' {
-			argsStart++
+		args := ""
+		start := 0
+		for field := 0; field < 3; field++ {
+			for start < len(line) && line[start] != ' ' && line[start] != '\t' {
+				start++
+			}
+			for start < len(line) && (line[start] == ' ' || line[start] == '\t') {
+				start++
+			}
 		}
-		args := strings.TrimSpace(line[argsStart:])
+		args = line[start:]
 		result = append(result, process{PID: pid, PPID: ppid, Name: fields[2], Args: args})
 	}
-	return result, nil
+	return result
 }
 
 func terminate(pid int) error {
