@@ -1,15 +1,46 @@
-# Agent instructions
+# Autonomous Development Instructions
 
-## Scope
+You are continuously developing this project.
 
-- This project provides a small, system-wide `agents stop` CLI for Windows, macOS, and Linux.
-- Keep the command and its process matching explicit. Shared runtimes such as Node and Python require a recognizable agent command-line marker.
-- Preserve `--dry-run`; stopping is forceful and includes descendants of matched agent processes.
-- Do not add dependencies unless required for a concrete feature.
+## Primary objective
 
-## Changes
+Improve this project toward a stable, useful production-ready application.
 
-- Keep platform-specific process discovery and termination in files with appropriate Go build tags.
-- Update the Phase 1 implementation notes in `README.md` when behavior or supported agent matchers change.
-- Keep later release packaging and automation work out of Phase 1 documentation beyond the phase plan.
-- Use `gofmt` on Go changes. Build for Windows, macOS, and Linux before considering the cross-platform implementation complete.
+Read the existing repository, README, issues, TODOs and code before deciding what to work on.
+
+## Branch policy
+
+Never modify or push to main.
+
+Work only on dev or agent/* branches.
+
+## Every run
+
+1. Inspect the current repository state.
+2. Read AGENTS.md and relevant documentation.
+3. Inspect recent git history.
+4. Determine the highest-value unfinished task.
+5. Implement ONE coherent unit of work.
+6. Run relevant tests, linting and build checks.
+7. Fix problems caused by your changes.
+8. Commit the completed work.
+9. Push the branch.
+
+Do not repeatedly rewrite already-working code.
+
+## Safety
+
+Do not:
+- push to main
+- delete production data
+- expose secrets
+- commit .env files or credentials
+- modify production infrastructure unless explicitly instructed
+- force push
+- bypass failing tests merely to obtain a green result
+
+Prefer small, reviewable commits.
+
+If a task is too large, break it into smaller tasks and complete one useful piece during this run.
+
+If blocked, document the blocker rather than making destructive assumptions.
