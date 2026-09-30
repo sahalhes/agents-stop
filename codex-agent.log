@@ -1,0 +1,737 @@
+
+========================================
+2026-09-29T14:20:01+02:00 - Starting Codex run
+Already on 'dev'
+M	run-agent.sh
+Your branch is up to date with 'origin/dev'.
+2026-09-29T14:20:03+02:00 - Working tree has existing changes. Skipping.
+
+========================================
+2026-09-29T14:22:13+02:00 - Starting Codex run
+Already on 'dev'
+Your branch is up to date with 'origin/dev'.
+From github.com:sahalhes/agents-stop
+ * branch            dev        -> FETCH_HEAD
+Already up to date.
+OpenAI Codex v0.159.0
+--------
+workdir: /root/projects/agents-stop
+model: gpt-6-sol
+provider: openai
+approval: never
+sandbox: workspace-write [workdir, /tmp, $TMPDIR]
+reasoning effort: low
+reasoning summaries: none
+session id: 01a0ed1d-a7ea-73c1-83f1-4202ed973fd4
+--------
+user
+Read AGENTS.md and AUTODEVELOP.md. Continue development of this project. Inspect the current code, documentation, tests, TODOs and recent git history. Choose ONE useful unfinished improvement. Implement it and run appropriate tests. Work only on dev. Never modify or push to main. When the work is complete and tests pass, stage the relevant changes, commit them with a descriptive commit message, and push to origin dev. Do not force push. If there is no appropriate improvement or you are blocked, make no destructive changes and explain the blocker.
+codex
+I’ll inspect the repository guidance, current branch, recent commits, and test coverage, then make one focused change on `dev` and run the relevant checks before committing and pushing.
+exec
+/bin/bash -lc "pwd && git status --short --branch && rg --files -g 'AGENTS.md' -g 'AUTODEVELOP.md' -g 'README*' -g '*TODO*' -g 'package.json' -g 'pyproject.toml' -g 'Cargo.toml' -g 'go.mod' | head -80 && git log -5 --oneline" in /root/projects/agents-stop
+ succeeded in 110ms:
+/root/projects/agents-stop
+## dev...origin/dev
+?? codex-agent.log
+AGENTS.md
+go.mod
+README.md
+AUTODEVELOP.md
+cd3fa19 chore: add autonomous Codex runner
+f91aed0 k
+6eecbdf k
+31c9779 Improve Unix process handling and add tests
+d1eb844 k
+
+exec
+/bin/bash -lc "cat AGENTS.md AUTODEVELOP.md README.md && rg --files | head -100 && rg -n 'TODO|FIXME|XXX' . --glob '"'!codex-agent.log'"' && git log -3 --stat" in /root/projects/agents-stop
+ succeeded in 61ms:
+# Autonomous Development Instructions
+
+You are continuously developing this project.
+
+## Primary objective
+
+Improve this project toward a stable, useful production-ready application.
+
+Read the existing repository, README, issues, TODOs and code before deciding what to work on.
+
+## Branch policy
+
+Never modify or push to main.
+
+Work only on dev or agent/* branches.
+
+## Every run
+
+1. Inspect the current repository state.
+2. Read AGENTS.md and relevant documentation.
+3. Inspect recent git history.
+4. Determine the highest-value unfinished task.
+5. Implement ONE coherent unit of work.
+6. Run relevant tests, linting and build checks.
+7. Fix problems caused by your changes.
+8. Commit the completed work.
+9. Push the branch.
+
+Do not repeatedly rewrite already-working code.
+
+## Safety
+
+Do not:
+- push to main
+- delete production data
+- expose secrets
+- commit .env files or credentials
+- modify production infrastructure unless explicitly instructed
+- force push
+- bypass failing tests merely to obtain a green result
+
+Prefer small, reviewable commits.
+
+If a task is too large, break it into smaller tasks and complete one useful piece during this run.
+
+If blocked, document the blocker rather than making destructive assumptions.# Scheduled development task
+
+Use this file as the task prompt for a scheduled coding agent working in this repository. The scheduler supplies the cadence and runs the agent from the repository root. This file does not install or start a cron job.
+
+## Goal for each run
+
+Make one small, useful improvement toward the current phase in `README.md`. Read `AGENTS.md`, `README.md`, and the relevant source before choosing work. Prefer a concrete correctness issue, a meaningful test for existing behavior, or a documentation gap. If the current phase is complete, report that finding; do not start a later phase without an explicit project decision.
+
+## Workflow
+
+1. Check the working tree and recent commits. Preserve unrelated or uncommitted work. If a clean, isolated change is not possible, report the blocker and stop.
+2. Choose one scoped task and implement it. Keep agent process matching explicit, preserve `--dry-run`, and account for descendants when stopping processes. Follow the platform build tag and documentation rules in `AGENTS.md`.
+3. Run `gofmt` on changed Go files. Run `go test ./...` and build for Windows, macOS, and Linux using `GOOS=windows`, `GOOS=darwin`, and `GOOS=linux` with `go build -o` paths under a temporary directory. Do not run `agents stop` without `--dry-run` as a test.
+4. Review the diff for scope and accidental files. If checks pass, commit only this run's changes with a descriptive message. Push the commit to the current branch only when the scheduled runner is configured and authorized to push. Never force push.
+5. Report the change, test results, commit hash, and any remaining issue. If checks fail, fix them or report the failure without committing an unverified change.
+
+Keep each run bounded. Do not add release packaging or automation to Phase 1 implementation notes beyond the existing phase plan. Do not add dependencies without a concrete need.
+# agents-stop
+
+A small, system-wide `agents stop` CLI for Windows, macOS, and Linux. It finds supported AI coding agent processes and forcefully stops them, including their descendants. Use `--dry-run` to preview the processes that would be stopped.
+
+## Phase plan
+
+### Phase 1: Core process stopping
+
+- Provide `agents stop`, help, version output, and the `--dry-run` option.
+- Discover processes using platform-specific implementations for Windows and Unix-like systems.
+- Match supported agent executables explicitly. For shared runtimes such as Node and Python, require a recognizable agent command-line marker.
+- Include descendants of matched agent processes and stop descendants before their parents.
+- Keep the implementation dependency-free and document supported behavior here.
+
+**Status:** Core command and platform process implementations are present. Cross-platform builds and behavior checks remain to be completed.
+
+### Phase 2: Reliability and compatibility
+
+- Improve process-list parsing and error reporting for platform-specific edge cases.
+- Review process matching against supported agent command lines to reduce accidental matches and missed agents.
+- Verify dry-run output and descendant handling on Windows, macOS, and Linux.
+
+### Phase 3: Distribution
+
+- Define release artifacts and installation guidance for supported operating systems and architectures.
+- Add versioned release packaging once the distribution targets are settled.
+
+### Phase 4: Release automation
+
+- Automate cross-platform builds and checks in CI.
+- Automate publishing versioned artifacts and release notes.
+
+## Usage
+
+```text
+agents stop [--dry-run]
+agents --version
+```
+
+<<<<<<< HEAD
+Stopping is forceful. Review the `--dry-run` output before stopping processes when you are unsure which agent processes are running.
+=======
+On Windows, use `go build -o agents.exe .` and run `agents.exe stop --dry-run`.
+
+Supported process names: Codex, Claude Code, OpenCode, Goose, Herd, Aider, Gemini CLI, Cline, and Kiro CLI. For Node/Python hosts, the command line must contain a known agent marker. A match includes its descendants so task subprocesses are stopped too. This is system-wide and may include other users' processes; operating system permissions can prevent termination. The command reports those failures.
+
+## Phase 1 implementation notes
+
+- No third-party Go dependencies.
+- Windows enumeration uses built-in PowerShell CIM and termination uses `taskkill /T /F` to include descendants.
+- macOS/Linux enumeration uses `ps` and reads its argument column without the PID, parent PID, or executable column for marker matching; termination sends `SIGKILL`.
+- `--dry-run` is recommended before the first stop on a machine.
+- If any matched process cannot be stopped, the command reports each failure and exits with a nonzero status.
+- Agent matching is maintained in `main.go`; direct executable names match explicitly, while Node/Python processes require one of the listed agent command markers. Keep matching narrow and update this document when supported matchers change.
+>>>>>>> 31c9779f4152716d37b767dfa086c55708afe5f7
+AGENTS.md
+go.mod
+codex-agent.log
+processes_windows.go
+main.go
+processes_unix_test.go
+run-agent.sh
+processes_unix.go
+README.md
+AUTODEVELOP.md
+./AGENTS.md:9:Read the existing repository, README, issues, TODOs and code before deciding what to work on.
+./run-agent.sh:40:  "Read AGENTS.md and AUTODEVELOP.md. Continue development of this project. Inspect the current code, documentation, tests, TODOs and recent git history. Choose ONE useful unfinished improvement. Implement it and run appropriate tests. Work only on dev. Never modify or push to main. When the work is complete and tests pass, stage the relevant changes, commit them with a descriptive commit message, and push to origin dev. Do not force push. If there is no appropriate improvement or you are blocked, make no destructive changes and explain the blocker." \
+commit cd3fa19f842314bac656c0750249343566b2f8b4
+Author: Sahal Hussain <sahaldevelop@gmail.com>
+Date:   Tue Sep 29 14:21:59 2026 +0200
+
+    chore: add autonomous Codex runner
+
+ run-agent.sh | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+
+commit f91aed082f8bfee4f24a9ff9575a1d4f3e815998
+Merge: 6eecbdf 31c9779
+Author: sahalhes <sahaldevelop@gmail.com>
+Date:   Tue Sep 29 17:48:28 2026 +0530
+
+    k
+
+commit 6eecbdf667421440ebd401f3e92c20d940bc2910
+Author: sahalhes <sahaldevelop@gmail.com>
+Date:   Tue Sep 29 17:45:15 2026 +0530
+
+    k
+
+ AGENTS.md    | 53 ++++++++++++++++++++++++++++++++++++++++++-----------
+ README.md    | 49 ++++++++++++++++++++++++++++---------------------
+ run-agent.sh | 47 +++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 117 insertions(+), 32 deletions(-)
+
+codex
+The README contains unresolved merge markers, which currently obscure the usage and Phase 1 notes. I’m checking the implementation and tests before choosing the smallest useful fix.
+exec
+/bin/bash -lc 'cat main.go processes_unix.go processes_windows.go processes_unix_test.go go.mod && git status --porcelain=v1 && git remote -v' in /root/projects/agents-stop
+ succeeded in 12ms:
+package main
+
+import (
+	"fmt"
+	"os"
+	"strings"
+)
+
+var version = "dev"
+
+func main() {
+	args := os.Args[1:]
+	if len(args) == 0 || args[0] == "help" || args[0] == "--help" || args[0] == "-h" {
+		usage()
+		return
+	}
+	if args[0] == "--version" || args[0] == "version" {
+		fmt.Printf("agents %s\n", version)
+		return
+	}
+	if args[0] != "stop" {
+		fatal("unknown command %q (try: agents help)", args[0])
+	}
+	dryRun := false
+	for _, arg := range args[1:] {
+		if arg == "--dry-run" {
+			dryRun = true
+		} else {
+			fatal("unknown option %q", arg)
+		}
+	}
+	if err := stopAgents(dryRun); err != nil {
+		fatal("%v", err)
+	}
+}
+
+func usage() {
+	fmt.Println(`agents - stop AI agent processes
+
+Usage:
+  agents stop [--dry-run]
+  agents --version
+
+stop scans the whole machine for supported AI coding agents and their child
+processes. It forcefully terminates matches. Use --dry-run to preview them.`)
+}
+
+func fatal(format string, args ...any) {
+	fmt.Fprintf(os.Stderr, "agents: "+format+"\n", args...)
+	os.Exit(2)
+}
+
+type process struct {
+	PID  int    `json:"pid"`
+	PPID int    `json:"ppid"`
+	Name string `json:"name"`
+	Args string `json:"args"`
+}
+
+var executableNames = map[string]bool{
+	"codex": true, "claude": true, "opencode": true, "goose": true,
+	"herd": true, "aider": true, "gemini": true, "cline": true, "kiro": true,
+}
+
+var commandMarkers = []string{
+	"@openai/codex", "codex app-server", "@anthropic-ai/claude-code", "claude-code",
+	"opencode-ai", "goose agent", "herd agent", "aider-chat", "@google/gemini-cli",
+	"gemini-cli", "cline", "kiro-cli",
+}
+
+func isAgent(p process) bool {
+	base := strings.ToLower(p.Name)
+	if index := strings.LastIndexAny(base, `/\\`); index >= 0 {
+		base = base[index+1:]
+	}
+	if ext := strings.LastIndexByte(base, '.'); ext >= 0 {
+		base = base[:ext]
+	}
+	if executableNames[base] {
+		return true
+	}
+	if base != "node" && base != "nodejs" && base != "python" && base != "python3" {
+		return false
+	}
+	args := " " + strings.ToLower(p.Args) + " "
+	for _, marker := range commandMarkers {
+		if strings.Contains(args, marker) {
+			return true
+		}
+	}
+	return false
+}
+
+func stopAgents(dryRun bool) error {
+	all, err := listProcesses()
+	if err != nil {
+		return fmt.Errorf("scan processes: %w", err)
+	}
+	selected := make(map[int]process)
+	for _, p := range all {
+		if isAgent(p) {
+			selected[p.PID] = p
+		}
+	}
+	changed := true
+	for changed {
+		changed = false
+		for _, p := range all {
+			if _, exists := selected[p.PID]; !exists {
+				if _, parentSelected := selected[p.PPID]; parentSelected {
+					selected[p.PID] = p
+					changed = true
+				}
+			}
+		}
+	}
+	if len(selected) == 0 {
+		fmt.Println("No supported agent processes found.")
+		return nil
+	}
+	order := make([]process, 0, len(selected))
+	for _, p := range selected {
+		order = append(order, p)
+	}
+	depth := func(p process) int {
+		d, parent := 0, p.PPID
+		for d < len(selected) {
+			ancestor, ok := selected[parent]
+			if !ok {
+				break
+			}
+			d++
+			parent = ancestor.PPID
+		}
+		return d
+	}
+	for i := 0; i < len(order); i++ {
+		for j := i + 1; j < len(order); j++ {
+			if depth(order[j]) > depth(order[i]) {
+				order[i], order[j] = order[j], order[i]
+			}
+		}
+	}
+	failed := 0
+	for _, p := range order {
+		if p.PID == os.Getpid() {
+			continue
+		}
+		if dryRun {
+			fmt.Printf("Would stop %s (PID %d)\n", p.Name, p.PID)
+			continue
+		}
+		if err := terminate(p.PID); err != nil {
+			fmt.Fprintf(os.Stderr, "Could not stop %s (PID %d): %v\n", p.Name, p.PID, err)
+			failed++
+		} else {
+			fmt.Printf("Stopped %s (PID %d)\n", p.Name, p.PID)
+		}
+	}
+	if failed > 0 {
+		return fmt.Errorf("could not stop %d process(es)", failed)
+	}
+	return nil
+}
+//go:build !windows
+
+package main
+
+import (
+	"fmt"
+	"os/exec"
+	"strconv"
+	"strings"
+	"syscall"
+)
+
+func listProcesses() ([]process, error) {
+	output, err := exec.Command("ps", "-axo", "pid=,ppid=,comm=,args=").Output()
+	if err != nil {
+		return nil, err
+	}
+	return parsePSOutput(string(output)), nil
+}
+
+func parsePSOutput(output string) []process {
+	var result []process
+	for _, line := range strings.Split(output, "\n") {
+		line = strings.TrimSpace(line)
+		fields := strings.Fields(line)
+		if len(fields) < 3 {
+			continue
+		}
+		pid, e1 := strconv.Atoi(fields[0])
+		ppid, e2 := strconv.Atoi(fields[1])
+		if e1 != nil || e2 != nil {
+			continue
+		}
+		args := ""
+		start := 0
+		for field := 0; field < 3; field++ {
+			for start < len(line) && line[start] != ' ' && line[start] != '\t' {
+				start++
+			}
+			for start < len(line) && (line[start] == ' ' || line[start] == '\t') {
+				start++
+			}
+		}
+		args = line[start:]
+		result = append(result, process{PID: pid, PPID: ppid, Name: fields[2], Args: args})
+	}
+	return result
+}
+
+func terminate(pid int) error {
+	if err := syscall.Kill(pid, syscall.SIGKILL); err != nil {
+		return fmt.Errorf("kill: %w", err)
+	}
+	return nil
+}
+//go:build windows
+
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"os/exec"
+	"strings"
+)
+
+func listProcesses() ([]process, error) {
+	script := `Get-CimInstance Win32_Process | Select-Object @{n='pid';e={$_.ProcessId}},@{n='ppid';e={$_.ParentProcessId}},@{n='name';e={$_.Name}},@{n='args';e={$_.CommandLine}} | ConvertTo-Json -Compress`
+	output, err := exec.Command("powershell.exe", "-NoLogo", "-NoProfile", "-NonInteractive", "-Command", script).Output()
+	if err != nil {
+		return nil, err
+	}
+	var result []process
+	if err := json.Unmarshal(output, &result); err == nil && len(result) > 0 {
+		return result, nil
+	}
+	trimmed := strings.TrimSpace(string(output))
+	if trimmed == "" || trimmed == "null" {
+		return nil, nil
+	}
+	var one process
+	if err := json.Unmarshal(output, &one); err != nil {
+		return nil, fmt.Errorf("decode process list: %w", err)
+	}
+	return []process{one}, nil
+}
+
+func terminate(pid int) error {
+	output, err := exec.Command("taskkill.exe", "/PID", fmt.Sprint(pid), "/T", "/F").CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("taskkill: %s", strings.TrimSpace(string(output)))
+	}
+	return nil
+}
+//go:build !windows
+
+package main
+
+import (
+	"reflect"
+	"testing"
+)
+
+func TestParsePSOutput(t *testing.T) {
+	output := "  101   1 node /usr/bin/node  /opt/@openai/codex/bin/codex\n" +
+		"  202 101 python3 python3 -m aider_chat\n" +
+		"invalid row\n"
+	want := []process{
+		{PID: 101, PPID: 1, Name: "node", Args: "/usr/bin/node  /opt/@openai/codex/bin/codex"},
+		{PID: 202, PPID: 101, Name: "python3", Args: "python3 -m aider_chat"},
+	}
+	if got := parsePSOutput(output); !reflect.DeepEqual(got, want) {
+		t.Fatalf("parsePSOutput() = %#v, want %#v", got, want)
+	}
+}
+module agents-stop
+
+go 1.22
+?? codex-agent.log
+origin	git@github.com:sahalhes/agents-stop.git (fetch)
+origin	git@github.com:sahalhes/agents-stop.git (push)
+
+apply patch
+patch: completed
+/root/projects/agents-stop/README.md
+diff --git a/README.md b/README.md
+index 26696dcf0ff6f5333ea118b438759a72ac866283..557e3032da59e8d1bf3e8d2f474b382a3ef93750
+--- a/README.md
++++ b/README.md
+@@ -37,9 +37,8 @@
+ agents --version
+ ```
+ 
+-<<<<<<< HEAD
+ Stopping is forceful. Review the `--dry-run` output before stopping processes when you are unsure which agent processes are running.
+-=======
++
+ On Windows, use `go build -o agents.exe .` and run `agents.exe stop --dry-run`.
+ 
+ Supported process names: Codex, Claude Code, OpenCode, Goose, Herd, Aider, Gemini CLI, Cline, and Kiro CLI. For Node/Python hosts, the command line must contain a known agent marker. A match includes its descendants so task subprocesses are stopped too. This is system-wide and may include other users' processes; operating system permissions can prevent termination. The command reports those failures.
+@@ -52,4 +51,3 @@
+ - `--dry-run` is recommended before the first stop on a machine.
+ - If any matched process cannot be stopped, the command reports each failure and exits with a nonzero status.
+ - Agent matching is maintained in `main.go`; direct executable names match explicitly, while Node/Python processes require one of the listed agent command markers. Keep matching narrow and update this document when supported matchers change.
+->>>>>>> 31c9779f4152716d37b767dfa086c55708afe5f7
+
+diff --git a/README.md b/README.md
+index 26696dcf0ff6f5333ea118b438759a72ac866283..557e3032da59e8d1bf3e8d2f474b382a3ef93750
+--- a/README.md
++++ b/README.md
+@@ -37,9 +37,8 @@
+ agents --version
+ ```
+ 
+-<<<<<<< HEAD
+ Stopping is forceful. Review the `--dry-run` output before stopping processes when you are unsure which agent processes are running.
+-=======
++
+ On Windows, use `go build -o agents.exe .` and run `agents.exe stop --dry-run`.
+ 
+ Supported process names: Codex, Claude Code, OpenCode, Goose, Herd, Aider, Gemini CLI, Cline, and Kiro CLI. For Node/Python hosts, the command line must contain a known agent marker. A match includes its descendants so task subprocesses are stopped too. This is system-wide and may include other users' processes; operating system permissions can prevent termination. The command reports those failures.
+@@ -52,4 +51,3 @@
+ - `--dry-run` is recommended before the first stop on a machine.
+ - If any matched process cannot be stopped, the command reports each failure and exits with a nonzero status.
+ - Agent matching is maintained in `main.go`; direct executable names match explicitly, while Node/Python processes require one of the listed agent command markers. Keep matching narrow and update this document when supported matchers change.
+->>>>>>> 31c9779f4152716d37b767dfa086c55708afe5f7
+
+codex
+The chosen change is a README repair: both sides of the merge contain useful information, so I kept the safety guidance and platform notes and removed the conflict markers. I’m running the required Go tests and cross-platform builds now.
+exec
+/bin/bash -lc 'go test ./... && build_dir=$(mktemp -d) && GOOS=windows go build -o "$build_dir/agents.exe" . && GOOS=darwin go build -o "$build_dir/agents-darwin" . && GOOS=linux go build -o "$build_dir/agents-linux" . && git diff --check && git diff -- README.md' in /root/projects/agents-stop
+ exited 127 in 10ms:
+/bin/bash: line 1: go: command not found
+
+diff --git a/README.md b/README.md
+index 26696dcf0ff6f5333ea118b438759a72ac866283..557e3032da59e8d1bf3e8d2f474b382a3ef93750
+--- a/README.md
++++ b/README.md
+@@ -37,9 +37,8 @@
+ agents --version
+ ```
+ 
+-<<<<<<< HEAD
+ Stopping is forceful. Review the `--dry-run` output before stopping processes when you are unsure which agent processes are running.
+-=======
++
+ On Windows, use `go build -o agents.exe .` and run `agents.exe stop --dry-run`.
+ 
+ Supported process names: Codex, Claude Code, OpenCode, Goose, Herd, Aider, Gemini CLI, Cline, and Kiro CLI. For Node/Python hosts, the command line must contain a known agent marker. A match includes its descendants so task subprocesses are stopped too. This is system-wide and may include other users' processes; operating system permissions can prevent termination. The command reports those failures.
+@@ -52,4 +51,3 @@
+ - `--dry-run` is recommended before the first stop on a machine.
+ - If any matched process cannot be stopped, the command reports each failure and exits with a nonzero status.
+ - Agent matching is maintained in `main.go`; direct executable names match explicitly, while Node/Python processes require one of the listed agent command markers. Keep matching narrow and update this document when supported matchers change.
+->>>>>>> 31c9779f4152716d37b767dfa086c55708afe5f7
+
+exec
+/bin/bash -lc 'command -v go || true; ls /usr/local/go/bin/go /opt/go/bin/go 2>/dev/null || true; git diff --check; git diff -- README.md; git status --short --branch' in /root/projects/agents-stop
+ succeeded in 63ms:
+diff --git a/README.md b/README.md
+index 26696dc..557e303 100644
+--- a/README.md
++++ b/README.md
+@@ -37,9 +37,8 @@ agents stop [--dry-run]
+ agents --version
+ ```
+ 
+-<<<<<<< HEAD
+ Stopping is forceful. Review the `--dry-run` output before stopping processes when you are unsure which agent processes are running.
+-=======
++
+ On Windows, use `go build -o agents.exe .` and run `agents.exe stop --dry-run`.
+ 
+ Supported process names: Codex, Claude Code, OpenCode, Goose, Herd, Aider, Gemini CLI, Cline, and Kiro CLI. For Node/Python hosts, the command line must contain a known agent marker. A match includes its descendants so task subprocesses are stopped too. This is system-wide and may include other users' processes; operating system permissions can prevent termination. The command reports those failures.
+@@ -52,4 +51,3 @@ Supported process names: Codex, Claude Code, OpenCode, Goose, Herd, Aider, Gemin
+ - `--dry-run` is recommended before the first stop on a machine.
+ - If any matched process cannot be stopped, the command reports each failure and exits with a nonzero status.
+ - Agent matching is maintained in `main.go`; direct executable names match explicitly, while Node/Python processes require one of the listed agent command markers. Keep matching narrow and update this document when supported matchers change.
+->>>>>>> 31c9779f4152716d37b767dfa086c55708afe5f7
+## dev...origin/dev
+ M README.md
+?? codex-agent.log
+
+diff --git a/README.md b/README.md
+index 26696dcf0ff6f5333ea118b438759a72ac866283..557e3032da59e8d1bf3e8d2f474b382a3ef93750
+--- a/README.md
++++ b/README.md
+@@ -37,9 +37,8 @@
+ agents --version
+ ```
+ 
+-<<<<<<< HEAD
+ Stopping is forceful. Review the `--dry-run` output before stopping processes when you are unsure which agent processes are running.
+-=======
++
+ On Windows, use `go build -o agents.exe .` and run `agents.exe stop --dry-run`.
+ 
+ Supported process names: Codex, Claude Code, OpenCode, Goose, Herd, Aider, Gemini CLI, Cline, and Kiro CLI. For Node/Python hosts, the command line must contain a known agent marker. A match includes its descendants so task subprocesses are stopped too. This is system-wide and may include other users' processes; operating system permissions can prevent termination. The command reports those failures.
+@@ -52,4 +51,3 @@
+ - `--dry-run` is recommended before the first stop on a machine.
+ - If any matched process cannot be stopped, the command reports each failure and exits with a nonzero status.
+ - Agent matching is maintained in `main.go`; direct executable names match explicitly, while Node/Python processes require one of the listed agent command markers. Keep matching narrow and update this document when supported matchers change.
+->>>>>>> 31c9779f4152716d37b767dfa086c55708afe5f7
+
+codex
+I found unresolved merge markers in `README.md` and prepared a documentation fix, but I could not verify it: `go` is not installed in this environment, so `go test ./...` and the required cross-platform builds could not run. I did not commit or push an unverified change. The README edit remains uncommitted; the pre-existing untracked `codex-agent.log` was untouched.
+diff --git a/README.md b/README.md
+index 26696dcf0ff6f5333ea118b438759a72ac866283..557e3032da59e8d1bf3e8d2f474b382a3ef93750
+--- a/README.md
++++ b/README.md
+@@ -37,9 +37,8 @@
+ agents --version
+ ```
+ 
+-<<<<<<< HEAD
+ Stopping is forceful. Review the `--dry-run` output before stopping processes when you are unsure which agent processes are running.
+-=======
++
+ On Windows, use `go build -o agents.exe .` and run `agents.exe stop --dry-run`.
+ 
+ Supported process names: Codex, Claude Code, OpenCode, Goose, Herd, Aider, Gemini CLI, Cline, and Kiro CLI. For Node/Python hosts, the command line must contain a known agent marker. A match includes its descendants so task subprocesses are stopped too. This is system-wide and may include other users' processes; operating system permissions can prevent termination. The command reports those failures.
+@@ -52,4 +51,3 @@
+ - `--dry-run` is recommended before the first stop on a machine.
+ - If any matched process cannot be stopped, the command reports each failure and exits with a nonzero status.
+ - Agent matching is maintained in `main.go`; direct executable names match explicitly, while Node/Python processes require one of the listed agent command markers. Keep matching narrow and update this document when supported matchers change.
+->>>>>>> 31c9779f4152716d37b767dfa086c55708afe5f7
+
+tokens used
+18,477
+I found unresolved merge markers in `README.md` and prepared a documentation fix, but I could not verify it: `go` is not installed in this environment, so `go test ./...` and the required cross-platform builds could not run. I did not commit or push an unverified change. The README edit remains uncommitted; the pre-existing untracked `codex-agent.log` was untouched.
+2026-09-29T14:23:01+02:00 - Codex finished with exit code 0
+
+========================================
+2026-09-29T15:00:01+02:00 - Starting Codex run
+From github.com:sahalhes/agents-stop
+   dffbf27..8ee5109  main       -> origin/main
+Already on 'dev'
+M	README.md
+Your branch is up to date with 'origin/dev'.
+2026-09-29T15:00:03+02:00 - Working tree has existing changes. Skipping.
+
+========================================
+2026-09-29T16:00:01+02:00 - Starting Codex run
+Already on 'dev'
+M	README.md
+Your branch is up to date with 'origin/dev'.
+2026-09-29T16:00:04+02:00 - Working tree has existing changes. Skipping.
+
+========================================
+2026-09-29T17:00:01+02:00 - Starting Codex run
+Already on 'dev'
+M	README.md
+Your branch is up to date with 'origin/dev'.
+2026-09-29T17:00:06+02:00 - Working tree has existing changes. Skipping.
+
+========================================
+2026-09-29T18:00:01+02:00 - Starting Codex run
+Already on 'dev'
+M	README.md
+Your branch is up to date with 'origin/dev'.
+2026-09-29T18:00:03+02:00 - Working tree has existing changes. Skipping.
+
+========================================
+2026-09-29T19:00:01+02:00 - Starting Codex run
+Already on 'dev'
+M	README.md
+Your branch is up to date with 'origin/dev'.
+2026-09-29T19:00:04+02:00 - Working tree has existing changes. Skipping.
+
+========================================
+2026-09-29T20:00:01+02:00 - Starting Codex run
+Already on 'dev'
+M	README.md
+Your branch is up to date with 'origin/dev'.
+2026-09-29T20:00:03+02:00 - Working tree has existing changes. Skipping.
+
+========================================
+2026-09-29T21:00:01+02:00 - Starting Codex run
+Already on 'dev'
+M	README.md
+Your branch is up to date with 'origin/dev'.
+2026-09-29T21:00:05+02:00 - Working tree has existing changes. Skipping.
+
+========================================
+2026-09-29T22:00:01+02:00 - Starting Codex run
+Already on 'dev'
+M	README.md
+Your branch is up to date with 'origin/dev'.
+2026-09-29T22:00:04+02:00 - Working tree has existing changes. Skipping.
+
+========================================
+2026-09-29T23:00:01+02:00 - Starting Codex run
+Already on 'dev'
+M	README.md
+Your branch is up to date with 'origin/dev'.
+2026-09-29T23:00:04+02:00 - Working tree has existing changes. Skipping.
+
+========================================
+2026-09-30T00:00:01+02:00 - Starting Codex run
+Already on 'dev'
+M	README.md
+Your branch is up to date with 'origin/dev'.
+2026-09-30T00:00:05+02:00 - Working tree has existing changes. Skipping.
+
+========================================
+2026-09-30T01:00:01+02:00 - Starting Codex run
+Already on 'dev'
+M	README.md
+Your branch is up to date with 'origin/dev'.
+2026-09-30T01:00:03+02:00 - Working tree has existing changes. Skipping.
+
+========================================
+2026-09-30T02:00:01+02:00 - Starting Codex run
+Already on 'dev'
+M	README.md
+Your branch is up to date with 'origin/dev'.
+2026-09-30T02:00:03+02:00 - Working tree has existing changes. Skipping.
+
+========================================
+2026-09-30T03:00:01+02:00 - Starting Codex run
+Already on 'dev'
+M	README.md
+Your branch is up to date with 'origin/dev'.
+2026-09-30T03:00:03+02:00 - Working tree has existing changes. Skipping.

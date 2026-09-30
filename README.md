@@ -37,9 +37,8 @@ agents stop [--dry-run]
 agents --version
 ```
 
-<<<<<<< HEAD
 Stopping is forceful. Review the `--dry-run` output before stopping processes when you are unsure which agent processes are running.
-=======
+
 On Windows, use `go build -o agents.exe .` and run `agents.exe stop --dry-run`.
 
 Supported process names: Codex, Claude Code, OpenCode, Goose, Herd, Aider, Gemini CLI, Cline, and Kiro CLI. For Node/Python hosts, the command line must contain a known agent marker. A match includes its descendants so task subprocesses are stopped too. This is system-wide and may include other users' processes; operating system permissions can prevent termination. The command reports those failures.
@@ -52,4 +51,3 @@ Supported process names: Codex, Claude Code, OpenCode, Goose, Herd, Aider, Gemin
 - `--dry-run` is recommended before the first stop on a machine.
 - If any matched process cannot be stopped, the command reports each failure and exits with a nonzero status.
 - Agent matching is maintained in `main.go`; direct executable names match explicitly, while Node/Python processes require one of the listed agent command markers. Keep matching narrow and update this document when supported matchers change.
->>>>>>> 31c9779f4152716d37b767dfa086c55708afe5f7
